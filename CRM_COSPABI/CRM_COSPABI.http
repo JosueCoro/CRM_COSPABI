@@ -1,0 +1,6 @@
+@CRM_COSPABI_HostAddress = http://localhost:5001
+
+GET {{CRM_COSPABI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
