@@ -35,13 +35,17 @@ public partial class CospabicrmContext : DbContext
 
     public virtual DbSet<Pago> Pagos { get; set; }
 
+    public virtual DbSet<Permiso> Permisos { get; set; }
+
     public virtual DbSet<Rol> Rols { get; set; }
+
+    public virtual DbSet<RolPermiso> RolPermisos { get; set; }
 
     public virtual DbSet<UsuarioAdmin> UsuarioAdmins { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-HS9CBF1\\SQLEXPRESS;Database=COSPABICRM ;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-HS9CBF1\\SQLEXPRESS;Database=COSPABICRM;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -339,6 +343,22 @@ public partial class CospabicrmContext : DbContext
                 .HasConstraintName("pago_factura_FK");
         });
 
+        modelBuilder.Entity<Permiso>(entity =>
+        {
+            entity.HasKey(e => e.IdPermiso).HasName("permiso_PK");
+
+            entity.ToTable("permiso");
+
+            entity.Property(e => e.IdPermiso)
+                .ValueGeneratedNever()
+                .HasColumnName("id_permiso");
+            entity.Property(e => e.Codigo).HasColumnName("codigo");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("descripcion");
+        });
+
         modelBuilder.Entity<Rol>(entity =>
         {
             entity.HasKey(e => e.IdRol).HasName("rol_PK");
@@ -355,6 +375,29 @@ public partial class CospabicrmContext : DbContext
                 .HasMaxLength(150)
                 .IsUnicode(false)
                 .HasColumnName("nombre_rol");
+        });
+
+        modelBuilder.Entity<RolPermiso>(entity =>
+        {
+            entity.HasKey(e => e.IdRolPermiso).HasName("rol_permiso_PK");
+
+            entity.ToTable("rol_permiso");
+
+            entity.Property(e => e.IdRolPermiso)
+                .ValueGeneratedNever()
+                .HasColumnName("id_rol_permiso");
+            entity.Property(e => e.PermisoIdPermiso).HasColumnName("permiso_id_permiso");
+            entity.Property(e => e.RolIdRol).HasColumnName("rol_id_rol");
+
+            entity.HasOne(d => d.PermisoIdPermisoNavigation).WithMany(p => p.RolPermisos)
+                .HasForeignKey(d => d.PermisoIdPermiso)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("rol_permiso_permiso_FK");
+
+            entity.HasOne(d => d.RolIdRolNavigation).WithMany(p => p.RolPermisos)
+                .HasForeignKey(d => d.RolIdRol)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("rol_permiso_rol_FK");
         });
 
         modelBuilder.Entity<UsuarioAdmin>(entity =>

@@ -15,5 +15,7 @@ public partial class Rol
 
     public virtual ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 
+    public virtual ICollection<RolPermiso> RolPermisos { get; set; } = new List<RolPermiso>();
+
     public virtual ICollection<UsuarioAdmin> UsuarioAdmins { get; set; } = new List<UsuarioAdmin>();
 }

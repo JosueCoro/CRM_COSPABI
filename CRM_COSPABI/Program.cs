@@ -1,4 +1,6 @@
 using CRM_COSPABI.Models;
+using CRM_COSPABI.Service;
+using CRM_COSPABI.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,9 +21,13 @@ builder.Services.AddDbContext<CospabicrmContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("conexiondb"))
 );
 
+builder.Services.AddScoped<IUsuarioAdminService, UsuarioAdminService>();
+builder.Services.AddScoped<INotificacionService, NotificacionService>();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
