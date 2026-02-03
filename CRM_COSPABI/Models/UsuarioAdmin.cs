@@ -19,7 +19,7 @@ public partial class UsuarioAdmin
 
     public bool Estado { get; set; }
 
-    public DateOnly FechaCreacion { get; set; }
+    public DateTime FechaCreacion { get; set; }
 
     public int RolIdRol { get; set; }
 

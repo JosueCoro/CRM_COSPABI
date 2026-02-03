@@ -349,10 +349,11 @@ public partial class CospabicrmContext : DbContext
 
             entity.ToTable("permiso");
 
-            entity.Property(e => e.IdPermiso)
-                .ValueGeneratedNever()
-                .HasColumnName("id_permiso");
-            entity.Property(e => e.Codigo).HasColumnName("codigo");
+            entity.Property(e => e.IdPermiso).HasColumnName("id_permiso");
+            entity.Property(e => e.Codigo)
+                .HasMaxLength(150)
+                .IsUnicode(false)
+                .HasColumnName("codigo");
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(150)
                 .IsUnicode(false)
@@ -383,9 +384,7 @@ public partial class CospabicrmContext : DbContext
 
             entity.ToTable("rol_permiso");
 
-            entity.Property(e => e.IdRolPermiso)
-                .ValueGeneratedNever()
-                .HasColumnName("id_rol_permiso");
+            entity.Property(e => e.IdRolPermiso).HasColumnName("id_rol_permiso");
             entity.Property(e => e.PermisoIdPermiso).HasColumnName("permiso_id_permiso");
             entity.Property(e => e.RolIdRol).HasColumnName("rol_id_rol");
 

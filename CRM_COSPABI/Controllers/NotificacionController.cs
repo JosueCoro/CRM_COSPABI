@@ -1,7 +1,6 @@
-﻿using CRM_COSPABI.Models;
-using Microsoft.AspNetCore.Http;
+﻿using CRM_COSPABI.DTOs;
+using CRM_COSPABI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM_COSPABI.Controllers
 {
@@ -9,68 +8,48 @@ namespace CRM_COSPABI.Controllers
     [ApiController]
     public class NotificacionController : ControllerBase
     {
-        private readonly CospabicrmContext _context;
+        private readonly INotificacionService _service;
 
-        public NotificacionController(CospabicrmContext context)
+        public NotificacionController(INotificacionService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        [HttpGet("ListarNotificacion")]
-        public async Task<ActionResult<IEnumerable<Notificacion>>> Listar()
+        [HttpGet]
+        public async Task<IActionResult> Listar()
         {
-            var notifiicaciones = await _context.Notificacions.ToListAsync();
-            return Ok(notifiicaciones);
+            return Ok(await _service.ListarAsync());
         }
 
-        [HttpPost("RegistrarNotificacion")]
-        public async Task<ActionResult<Notificacion>> GuardarNotificacion(Notificacion notificacion)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Obtener(int id)
         {
-            _context.Notificacions.Add(notificacion);
-            await _context.SaveChangesAsync();
-            return StatusCode(StatusCodes.Status201Created, notificacion);
+            var notificacion = await _service.ObtenerPorIdAsync(id);
+            if (notificacion == null) return NotFound();
+            return Ok(notificacion);
         }
 
-
-
-        [HttpPut("EditarNotificacion/{id}")]
-
-        public async Task<ActionResult> EditarNotificacion(int id, Notificacion notificacion)
+        [HttpPost]
+        public async Task<IActionResult> Crear(CreateNotificacionDto dto)
         {
-            var editarnotificacion = await _context.Notificacions.FindAsync(id);
-
-            if (editarnotificacion == null)
-            {
-                return NotFound();
-            }
-            editarnotificacion.Titulo = notificacion.Titulo;
-            editarnotificacion.Mensaje = notificacion.Mensaje;
-            editarnotificacion.Tipo = notificacion.Tipo;
-            editarnotificacion.FechaPublicacion = notificacion.FechaPublicacion;
-            editarnotificacion.Estado = notificacion.Estado;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(editarnotificacion);
-
-        }
-        [HttpDelete("EliminarNotificacion/{id}")]
-
-        public async Task<ActionResult> EliminarNotificacion(int id)
-        {
-            var Notificacion = await _context.Notificacions.FindAsync(id);
-            if (Notificacion == null)
-            {
-                return NotFound();
-            }
-            _context.Notificacions.Remove(Notificacion);
-            await _context.SaveChangesAsync();
-            return Ok(Notificacion);
+            var created = await _service.CrearAsync(dto);
+            return CreatedAtAction(nameof(Obtener), new { id = created.IdNotificacion }, created);
         }
 
-        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Actualizar(int id, UpdateNotificacionDto dto)
+        {
+            var updated = await _service.ActualizarAsync(id, dto);
+            if (updated == null) return NotFound();
+            return Ok(updated);
+        }
 
-
-
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var deleted = await _service.EliminarAsync(id);
+            if (!deleted) return NotFound();
+            return NoContent(); // 204 No Content es standard para delete exitoso
+        }
     }
 }
